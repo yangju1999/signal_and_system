@@ -90,32 +90,23 @@ if __name__ == '__main__':
                 '003.jpg', '004.jpg', '005.jpg', '006.jpg']
     one_dimension_spectrum_list =[] # 이미지들의 1D power spectrum 을 저장하기 위한 list -> 한번에 plot하기 위해
 
+
+#power spectrum 을 위한 for문
     for img_name in img_list:
         img = cv2.imread('data/'+img_name, 0) # 각각의 이미지 순서대로 불러오기, flag=0 을 사용해 흑백으로 불러오기
-        ft_img = ft(img, power_spectrum = True)  # 각각의 이미지 푸리에 변환
-        ft_img_centerized = np.fft.fftshift(ft_img)  # centerize
-        ft_img_centerized_for_show = np.log(np.abs(ft_img_centerized))  # get absolute(necessary) and log (optional) for better show  
-        after_filter = high_pass_filtering(ft_img_centerized)  # high pass filter 적용
-        after_filter_for_show = np.log(np.abs(after_filter))  # 필터 거친 푸리에 변환 이미지를 보여주기 위함
-        back_img = inverse_ft(after_filter)  # inverse 푸리에 변환
-        back_img_for_show = np.abs(back_img)  # get absolute for show
-        print(img_name+': inverse_ft_average = %d' % np.average(back_img_for_show))
+        ft_img_for_power_spectrum = ft(img, power_spectrum = True)  # 각각의 이미지 푸리에 변환
+        
+        ft_img_centerized_for_power_spectrum = np.fft.fftshift(ft_img_for_power_spectrum) 
+        
+        ft_img_centerized_for_show = 20*np.log(np.abs(ft_img_centerized_for_power_spectrum))  # get absolute(necessary) and log (optional) for better show  
 
         # original 이미지 하나씩 show
-        plt.subplot(141), plt.imshow(img, cmap='gray')
+        plt.subplot(121), plt.imshow(img, cmap='gray')
         plt.title('original image'), plt.xticks([]), plt.yticks([])
 
         # 푸리에 변환 이미지 하나씩 show
-        plt.subplot(142), plt.imshow(ft_img_centerized_for_show, cmap='gray')
+        plt.subplot(122), plt.imshow(ft_img_centerized_for_show, cmap='gray')
         plt.title('ft_image'), plt.xticks([]), plt.yticks([])
-
-        # filter 거친 푸리에 변환 이미지
-        plt.subplot(143), plt.imshow(after_filter_for_show, cmap='gray')
-        plt.title('after_filter'), plt.xticks([]), plt.yticks([])
-
-        # 필터 거친 후 역푸리에 변환 이미지 show
-        plt.subplot(144), plt.imshow(back_img_for_show, cmap='gray')
-        plt.title('inverse_ft'), plt.xticks([]), plt.yticks([])
 
         plt.show()
         # centerized 된 푸리에 변환 이미지를 azimuthal_avg
@@ -130,3 +121,32 @@ if __name__ == '__main__':
         
     plt.legend()
     plt.show()
+
+
+#여기서부터는 역푸리에 변환을 위한 for문 
+    for img_name in img_list:
+        img = cv2.imread('data/'+img_name, 0) # 각각의 이미지 순서대로 불러오기, flag=0 을 사용해 흑백으로 불러오기 
+        ft_img = ft(img, power_spectrum = False)# 각각의 이미지 푸리에 변환
+        ft_img_centerized = np.fft.fftshift(ft_img)  # centerize 
+        
+        after_filter = high_pass_filtering(ft_img_centerized)  # high pass filter 적용
+        after_filter_for_show = 20*np.log(np.abs(after_filter))  # 필터 거친 푸리에 변환 이미지를 보여주기 위함
+        back_img = inverse_ft(after_filter)  # inverse 푸리에 변환
+        back_img_for_show = np.abs(back_img)  # get absolute for show
+        print(img_name+': inverse_ft_average = %d' % np.average(back_img_for_show))
+
+        # original 이미지 하나씩 show
+        plt.subplot(121), plt.imshow(img, cmap='gray')
+        plt.title(img_name), plt.xticks([]), plt.yticks([])
+
+        # filter 거친 푸리에 변환 이미지
+        '''
+        plt.subplot(132), plt.imshow(after_filter_for_show, cmap='gray')
+        plt.title(img_name), plt.xticks([]), plt.yticks([])
+        '''
+
+        # 필터 거친 후 역푸리에 변환 이미지 show
+        plt.subplot(122), plt.imshow(back_img_for_show, cmap='gray')
+        plt.title(img_name), plt.xticks([]), plt.yticks([])
+
+        plt.show()
