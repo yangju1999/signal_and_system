@@ -130,16 +130,20 @@ if __name__ == '__main__':
         ft_img_centerized = np.fft.fftshift(ft_img)  # centerize 
         
         after_filter = high_pass_filtering(ft_img_centerized)  # high pass filter 적용
-        after_filter_for_show = 20*np.log(np.abs(after_filter))  # 필터 거친 푸리에 변환 이미지를 보여주기 위함
+        
+        # 필터 거친 푸리에 변환 이미지를 보여주기 위한 코드, 굳이 출력할 필요 없어서 주석 처리함. 
+        '''
+        after_filter_for_show = 20*np.log(np.abs(after_filter))
+        '''
+          
         back_img = inverse_ft(after_filter)  # inverse 푸리에 변환
         back_img_for_show = np.abs(back_img)  # get absolute for show
-        print(img_name+': inverse_ft_average = %d' % np.average(back_img_for_show))
 
         # original 이미지 하나씩 show
         plt.subplot(121), plt.imshow(img, cmap='gray')
         plt.title(img_name), plt.xticks([]), plt.yticks([])
 
-        # filter 거친 푸리에 변환 이미지
+        # filter 거친 푸리에 변환 이미지 출력하는 코드(따로 출력할 필요는 없어보여서 주석 처리함, 출력하려면 subplot 인자 수정해야 함)
         '''
         plt.subplot(132), plt.imshow(after_filter_for_show, cmap='gray')
         plt.title(img_name), plt.xticks([]), plt.yticks([])
